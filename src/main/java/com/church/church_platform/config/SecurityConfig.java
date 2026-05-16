@@ -44,6 +44,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/sermons/public").permitAll()
                         .requestMatchers("/api/sermons/public/**").permitAll()
                         .requestMatchers("/api/sermons/search").permitAll()
+
+                        .requestMatchers("/api/events/public").permitAll()
+                        .requestMatchers("/api/events/public/**").permitAll()
+                        .requestMatchers("/api/events/upcoming").permitAll()
+
+                        .requestMatchers("/api/posts/public").permitAll()
+                        .requestMatchers("/api/posts/public/**").permitAll()
+                        .requestMatchers("/api/prayers/public").permitAll()
                         .anyRequest().authenticated()
                 )
 
