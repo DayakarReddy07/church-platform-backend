@@ -62,21 +62,27 @@ public class AuthService {
     }
 
     // 🔐 Login existing user
+    // 🔐 Login existing user
     public AuthResponse login(LoginRequest request) {
-
-        // Authenticate user (Spring Security checks password)
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        // Load user from database
+        // Find user first — show clear message if not found
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() ->
-                        new RuntimeException("User not found!")
+                        new RuntimeException(
+                                "No account found with this email!"
+                        )
                 );
+
+        // Then authenticate (checks password)
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid password!");
+        }
 
         // Generate JWT token
         String token = jwtUtil.generateToken(
@@ -84,7 +90,6 @@ public class AuthService {
                 user.getRole().name()
         );
 
-        // Return response
         return AuthResponse.builder()
                 .token(token)
                 .name(user.getName())

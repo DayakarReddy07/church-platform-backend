@@ -32,14 +32,18 @@ public class SecurityConfig {
         http
                 // Disable CSRF (not needed for REST APIs)
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
 
                 // Define URL permissions
                 .authorizeHttpRequests(auth -> auth
-                        // These URLs are PUBLIC — no login needed
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/churches/public").permitAll()
                         .requestMatchers("/api/churches/public/**").permitAll()
+                        .requestMatchers("/api/churches/search").permitAll()
+
+                        .requestMatchers("/api/sermons/public").permitAll()
                         .requestMatchers("/api/sermons/public/**").permitAll()
-                        // Everything else needs authentication
+                        .requestMatchers("/api/sermons/search").permitAll()
                         .anyRequest().authenticated()
                 )
 
