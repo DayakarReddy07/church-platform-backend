@@ -61,8 +61,7 @@ public class AuthService {
                 .build();
     }
 
-    // 🔐 Login existing user
-    // 🔐 Login existing user
+    //  Login existing user
     public AuthResponse login(LoginRequest request) {
         // Find user first — show clear message if not found
         User user = userRepository.findByEmail(request.getEmail())

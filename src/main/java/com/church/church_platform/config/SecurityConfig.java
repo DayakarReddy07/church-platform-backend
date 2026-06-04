@@ -32,8 +32,7 @@ public class SecurityConfig {
         http
                 // Disable CSRF (not needed for REST APIs)
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
-
+                .cors(cors -> {})
                 // Define URL permissions
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()

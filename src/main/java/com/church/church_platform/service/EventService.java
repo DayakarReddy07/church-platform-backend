@@ -269,4 +269,14 @@ public class EventService {
 
         eventRepository.delete(event);
     }
+
+    // 👤 Get my church events (Church Admin)
+    public List<EventResponse> getMyEvents() {
+        Church church = getCurrentUserChurch();
+        return eventRepository
+                .findByChurchOrderByEventDateDesc(church)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
 }

@@ -55,4 +55,10 @@ public class PostController {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
+
+    // GET http://localhost:8080/api/posts/my-posts
+    @GetMapping("/api/posts/my-posts")
+    public ResponseEntity<List<PostResponse>> getMyPosts() {
+        return ResponseEntity.ok(postService.getMyPosts());
+    }
 }

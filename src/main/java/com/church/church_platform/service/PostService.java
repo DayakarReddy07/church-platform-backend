@@ -186,4 +186,22 @@ public class PostService {
 
         postRepository.delete(post);
     }
+
+    // Get my church posts (Church Admin)
+    public List<PostResponse> getMyPosts() {
+        User currentUser = getCurrentUser();
+        Church church = churchRepository
+                .findByAdmin(currentUser)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "You don't have a registered church!"
+                        )
+                );
+
+        return postRepository
+                .findByChurchOrderByCreatedAtDesc(church)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
 }

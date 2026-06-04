@@ -34,4 +34,7 @@ public interface EventRepository
 
     // Count events per church
     Long countByChurch(Church church);
+
+    // Get events by church
+    List<Event> findByChurchOrderByEventDateDesc(Church church);
 }

@@ -57,7 +57,7 @@ public class EventController {
         );
     }
 
-    // ✅ Register for event
+    // Register for event
     @PostMapping("/api/events/{id}/register")
     public ResponseEntity<Map<String, String>> registerForEvent(
             @PathVariable Long id) {
@@ -66,7 +66,7 @@ public class EventController {
         );
     }
 
-    // ❌ Cancel registration
+    //Cancel registration
     @DeleteMapping("/api/events/{id}/register")
     public ResponseEntity<Map<String, String>> cancelRegistration(
             @PathVariable Long id) {
@@ -99,5 +99,11 @@ public class EventController {
             @PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // GET http://localhost:8080/api/events/my-events
+    @GetMapping("/api/events/my-events")
+    public ResponseEntity<List<EventResponse>> getMyEvents() {
+        return ResponseEntity.ok(eventService.getMyEvents());
     }
 }
