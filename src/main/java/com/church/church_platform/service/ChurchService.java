@@ -63,14 +63,27 @@ public class ChurchService {
                 .build();
     }
 
-    // 📝 Register a new church
-    public ChurchResponse registerChurch(ChurchRegisterRequest request) {
+    // Register a church
+    public ChurchResponse registerChurch(
+            ChurchRegisterRequest request) {
+
         User currentUser = getCurrentUser();
 
-        // Check if this admin already has a church
-        if (churchRepository.findByAdmin(currentUser).isPresent()) {
+        // Check 1 — Same admin already has a church
+        if (churchRepository
+                .findByAdmin(currentUser)
+                .isPresent()) {
             throw new RuntimeException(
                     "You already have a registered church!"
+            );
+        }
+
+        // Check 2 — Church name already exists ← ADD THIS
+        if (churchRepository
+                .existsByNameIgnoreCase(request.getName())) {
+            throw new RuntimeException(
+                    "A church with this name already exists! " +
+                            "Please use a different name."
             );
         }
 
@@ -79,7 +92,8 @@ public class ChurchService {
 
         // If slug exists add number to end
         if (churchRepository.existsBySlug(slug)) {
-            slug = slug + "-" + System.currentTimeMillis();
+            slug = slug + "-" +
+                    System.currentTimeMillis();
         }
 
         // Create church
@@ -98,7 +112,6 @@ public class ChurchService {
                 .build();
 
         churchRepository.save(church);
-
         return mapToResponse(church);
     }
 

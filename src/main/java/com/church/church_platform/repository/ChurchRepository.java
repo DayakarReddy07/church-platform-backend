@@ -27,4 +27,7 @@ public interface ChurchRepository extends JpaRepository<Church, Long> {
     List<Church> findByNameContainingIgnoreCaseOrCityContainingIgnoreCase(
             String name, String city
     );
+
+    // Check if church name already exists
+    boolean existsByNameIgnoreCase(String name);
 }
