@@ -58,6 +58,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .role(user.getRole().name())
                 .message("Registration successful!")
+                .profilePic(user.getProfilePic())
                 .build();
     }
 
@@ -95,6 +96,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .role(user.getRole().name())
                 .message("Login successful!")
+                .profilePic(user.getProfilePic())
                 .build();
     }
 }
