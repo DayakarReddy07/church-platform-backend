@@ -6,6 +6,7 @@ import com.church.church_platform.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,4 +18,5 @@ public interface LikeRepository
     Optional<Like> findByUserAndPost(User user, Post post);
 
     Long countByPost(Post post);
+    List<Like> findByPost(Post post);
 }

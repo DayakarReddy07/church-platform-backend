@@ -2,8 +2,7 @@ package com.church.church_platform.service;
 
 import com.church.church_platform.dto.request.*;
 import com.church.church_platform.dto.response.ChurchResponse;
-import com.church.church_platform.entity.Church;
-import com.church.church_platform.entity.User;
+import com.church.church_platform.entity.*;
 import com.church.church_platform.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +18,12 @@ public class ChurchService {
     private final ChurchRepository churchRepository;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final SermonRepository sermonRepository;
+    private final EventRepository eventRepository;
+    private final PostRepository postRepository;
+    private final PrayerRequestRepository prayerRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     // ─── Helper: Get logged in user ───────────────────────
     private User getCurrentUser() {
@@ -195,5 +200,58 @@ public class ChurchService {
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    // 🗑️ Delete church and all related data
+    public void deleteChurch(Long churchId) {
+        Church church = churchRepository
+                .findById(churchId)
+                .orElseThrow(() ->
+                        new RuntimeException("Church not found!")
+                );
+
+        // Step 1 → Delete follows first
+        List<Follow> follows = followRepository
+                .findByChurch(church);
+        followRepository.deleteAll(follows);
+
+        // Step 2 → Delete sermons
+        List<Sermon> sermons = sermonRepository
+                .findByChurchOrderByCreatedAtDesc(church);
+        sermonRepository.deleteAll(sermons);
+
+        // Step 3 → Delete events
+        List<Event> events = eventRepository
+                .findByChurchOrderByEventDateAsc(church);
+        eventRepository.deleteAll(events);
+
+        // Step 4 → Delete prayer requests
+        List<PrayerRequest> prayers = prayerRepository
+                .findByChurch(church);
+        prayerRepository.deleteAll(prayers);
+
+        // Step 5 → Delete posts (with likes & comments)
+        List<Post> posts = postRepository
+                .findByChurchOrderByCreatedAtDesc(church);
+        posts.forEach(post -> deletePostWithRelations(post));
+
+        // Step 6 → Finally delete church
+        churchRepository.delete(church);
+    }
+    // Helper — delete post with its likes & comments
+    private void deletePostWithRelations(Post post) {
+
+        // Delete likes first
+        List<Like> likes = likeRepository
+                .findByPost(post);
+        likeRepository.deleteAll(likes);
+
+        // Delete comments
+        List<Comment> comments = commentRepository
+                .findByPostOrderByCreatedAtDesc(post);
+        commentRepository.deleteAll(comments);
+
+        // Delete post
+        postRepository.delete(post);
     }
 }

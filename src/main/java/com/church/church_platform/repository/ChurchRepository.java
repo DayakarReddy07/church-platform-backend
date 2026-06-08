@@ -30,4 +30,6 @@ public interface ChurchRepository extends JpaRepository<Church, Long> {
 
     // Check if church name already exists
     boolean existsByNameIgnoreCase(String name);
+    // Count verified churches
+    long countByVerifiedTrue();
 }

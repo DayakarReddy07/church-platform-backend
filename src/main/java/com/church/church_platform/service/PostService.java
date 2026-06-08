@@ -170,23 +170,6 @@ public class PostService {
         }
     }
 
-    // 🗑️ Delete post (Church Admin)
-    public void deletePost(Long id) {
-        Church church = getCurrentUserChurch();
-        Post post = postRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Post not found!")
-                );
-
-        if (!post.getChurch().getId().equals(church.getId())) {
-            throw new RuntimeException(
-                    "You are not authorized to delete this post!"
-            );
-        }
-
-        postRepository.delete(post);
-    }
-
     // Get my church posts (Church Admin)
     public List<PostResponse> getMyPosts() {
         User currentUser = getCurrentUser();
@@ -203,5 +186,57 @@ public class PostService {
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+    // 🗑️ Delete post (Church Admin)
+    // 🗑️ Delete post with all likes & comments
+    public void deletePost(Long postId) {
+        User currentUser = getCurrentUser();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() ->
+                        new RuntimeException("Post not found!")
+                );
+
+        // Check authorization
+        // Allow church admin OR super admin to delete
+        boolean isChurchAdmin =
+                post.getChurch().getAdmin().getId()
+                        .equals(currentUser.getId());
+        boolean isSuperAdmin =
+                currentUser.getRole() ==
+                        User.Role.SUPER_ADMIN;
+
+        if (!isChurchAdmin && !isSuperAdmin) {
+            throw new RuntimeException(
+                    "Not authorized to delete this post!"
+            );
+        }
+
+        // Step 1 → Delete likes first
+        List<Like> likes = likeRepository
+                .findByPost(post);
+        likeRepository.deleteAll(likes);
+
+        // Step 2 → Delete comments
+        List<Comment> comments = commentRepository
+                .findByPostOrderByCreatedAtDesc(post);
+        commentRepository.deleteAll(comments);
+
+        // Step 3 → Delete post
+        postRepository.delete(post);
+    }
+
+    // Helper for deleting post with relations
+// (used by church delete)
+    public void deletePostWithRelations(Post post) {
+        List<Like> likes = likeRepository
+                .findByPost(post);
+        likeRepository.deleteAll(likes);
+
+        List<Comment> comments = commentRepository
+                .findByPostOrderByCreatedAtDesc(post);
+        commentRepository.deleteAll(comments);
+
+        postRepository.delete(post);
     }
 }

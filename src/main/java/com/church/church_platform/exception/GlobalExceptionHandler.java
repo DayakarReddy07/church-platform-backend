@@ -91,6 +91,27 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
+    // Handle disabled account
+    @ExceptionHandler(
+            org.springframework.security.authentication
+                    .DisabledException.class
+    )
+    public ResponseEntity<Map<String, Object>>
+    handleDisabledException(Exception ex) {
+
+        Map<String, Object> error = new HashMap<>();
+        error.put("timestamp", LocalDateTime.now());
+        error.put("status", 403);
+        error.put("error", "Account Disabled");
+        error.put("message",
+                "Your account has been disabled. " +
+                        "Please contact support."
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(error);
+    }
     // Handle all other exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(

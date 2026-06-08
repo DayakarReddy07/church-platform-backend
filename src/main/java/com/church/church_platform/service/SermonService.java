@@ -180,18 +180,26 @@ public class SermonService {
 
     // 🗑️ Delete sermon (Church Admin)
     public void deleteSermon(Long id) {
-        Church church = getCurrentUserChurch();
+        User currentUser = getCurrentUser();
 
-        Sermon sermon = sermonRepository.findById(id)
+        Sermon sermon = sermonRepository
+                .findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Sermon not found!")
                 );
 
-        // Make sure sermon belongs to this church
-        if (!sermon.getChurch().getId()
-                .equals(church.getId())) {
+        // Check if user is church admin
+        // or super admin
+        boolean isChurchAdmin =
+                sermon.getChurch().getAdmin().getId()
+                        .equals(currentUser.getId());
+        boolean isSuperAdmin =
+                currentUser.getRole() ==
+                        User.Role.SUPER_ADMIN;
+
+        if (!isChurchAdmin && !isSuperAdmin) {
             throw new RuntimeException(
-                    "You are not authorized to delete this sermon!"
+                    "Not authorized to delete this sermon!"
             );
         }
 

@@ -1,5 +1,6 @@
 package com.church.church_platform.repository;
 
+import com.church.church_platform.entity.Church;
 import com.church.church_platform.entity.PrayerRequest;
 import com.church.church_platform.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,6 @@ public interface PrayerRequestRepository
     List<PrayerRequest> findByIsPublicTrueOrderByCreatedAtDesc();
 
     List<PrayerRequest> findByUserOrderByCreatedAtDesc(User user);
+
+    List<PrayerRequest> findByChurch(Church church);
 }

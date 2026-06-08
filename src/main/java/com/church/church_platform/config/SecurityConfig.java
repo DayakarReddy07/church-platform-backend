@@ -51,6 +51,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/posts/public").permitAll()
                         .requestMatchers("/api/posts/public/**").permitAll()
                         .requestMatchers("/api/prayers/public").permitAll()
+                        // Super admin - protected
+                        .requestMatchers("/api/super-admin/**")
+                        .authenticated()
                         .anyRequest().authenticated()
                 )
 

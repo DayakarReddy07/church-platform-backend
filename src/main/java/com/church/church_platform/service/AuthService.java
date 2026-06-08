@@ -71,7 +71,12 @@ public class AuthService {
                                 "No account found with this email!"
                         )
                 );
-
+        if (!user.isEnabled()) {
+            throw new RuntimeException(
+                    "Your account has been disabled. " +
+                            "Please contact support."
+            );
+        }
         // Then authenticate (checks password)
         try {
             authenticationManager.authenticate(
