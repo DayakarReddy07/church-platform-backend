@@ -18,6 +18,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
     private final ChurchRepository churchRepository;
+    private final NotificationService notificationService;
 
     // ─── Helper: Get logged in user ───────────────────
     private User getCurrentUser() {
@@ -29,7 +30,7 @@ public class FollowService {
                 );
     }
 
-    // 🤝 Follow a church
+    // Follow a church
     public Map<String, String> followChurch(Long churchId) {
         User currentUser = getCurrentUser();
 
@@ -53,13 +54,15 @@ public class FollowService {
                 .build();
 
         followRepository.save(follow);
-
+        notificationService.notifyNewFollower(
+                church, currentUser
+        );
         return Map.of(
                 "message", "Successfully followed " + church.getName()
         );
     }
 
-    // 💔 Unfollow a church
+    // Unfollow a church
     public Map<String, String> unfollowChurch(Long churchId) {
         User currentUser = getCurrentUser();
 
@@ -84,7 +87,7 @@ public class FollowService {
         );
     }
 
-    // 📋 Get all churches I follow
+    // Get all churches I follow
     public List<ChurchResponse> getMyFollowedChurches() {
         User currentUser = getCurrentUser();
 
@@ -112,7 +115,7 @@ public class FollowService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ Check if I follow a specific church
+    //  Check if I follow a specific church
     public Map<String, Object> checkFollowStatus(Long churchId) {
         User currentUser = getCurrentUser();
 

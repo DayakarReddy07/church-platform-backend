@@ -21,6 +21,7 @@ public class EventService {
     private final EventRegistrationRepository registrationRepository;
     private final ChurchRepository churchRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // ─── Helper: Get logged in user ───────────────────
     private User getCurrentUser() {
@@ -105,6 +106,9 @@ public class EventService {
                 .build();
 
         eventRepository.save(event);
+        notificationService.notifyFollowersNewEvent(
+                church, event.getTitle()
+        );
         return mapToResponse(event);
     }
 

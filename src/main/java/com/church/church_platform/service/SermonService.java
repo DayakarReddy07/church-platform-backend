@@ -19,6 +19,7 @@ public class SermonService {
     private final SermonRepository sermonRepository;
     private final ChurchRepository churchRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // ─── Helper: Get logged in user ───────────────────
     private User getCurrentUser() {
@@ -76,6 +77,9 @@ public class SermonService {
                 .build();
 
         sermonRepository.save(sermon);
+        notificationService.notifyFollowersNewSermon(
+                church, sermon.getTitle()
+        );
         return mapToResponse(sermon);
     }
 

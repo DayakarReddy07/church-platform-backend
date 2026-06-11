@@ -21,6 +21,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final ChurchRepository churchRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // ─── Helper: Get current user ─────────────────────
     private User getCurrentUser() {
@@ -104,6 +105,9 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
+        notificationService.notifyFollowersNewPost(
+                church, post.getTitle()
+        );
         return mapToResponse(post);
     }
 
